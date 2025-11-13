@@ -17,6 +17,7 @@ const Descricao = () => {
   const [produto, setProduto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [tamanho, setTamanho] = useState("M");
 
   // Função para buscar os detalhes
   useEffect(() => {
@@ -83,6 +84,16 @@ const Descricao = () => {
     );
   }
 
+  const tamanhoCompleto =
+    tamanho === "P" ? "Pequeno" : tamanho === "M" ? "Médio" : "Grande";
+
+  const precoAtual =
+    tamanhoCompleto === "Pequeno"
+      ? produto.precoPequeno
+      : tamanhoCompleto === "Médio"
+      ? produto.precoMedio
+      : produto.precoGrande;
+
   // 🎯 Dados da API agora estão em 'produto' e podem ser usados!
   return (
     <View style={styles.page}>
@@ -91,11 +102,11 @@ const Descricao = () => {
         imageSource={{ uri: `http://10.0.2.2:3000/uploads/${produto.imagem}` }}
       />
       <DescricaoCompletaProduto descriptionComplet={produto.descricao} />
-      <SizeSelector tamanhos={produto.tamanhos} />
+      <SizeSelector selectedSize={tamanho} onSelectSize={setTamanho} />
       <Footer
         onAdd={() => console.log("Adicionar produto")}
         loading={false}
-        price={produto.preco}
+        price={precoAtual}
       />
     </View>
   );

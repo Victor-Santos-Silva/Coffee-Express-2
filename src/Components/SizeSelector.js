@@ -1,25 +1,37 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
-const SizeSelector = () => (
-  <View style={stylesSizeSelector.sizeContainer}>
-    <Text style={stylesSizeSelector.sizeTitle}>Tamanho</Text>
-    <View style={stylesSizeSelector.sizeOptions}>
-      {["P", "M", "G"].map((size, index) => (
-        <Text
-          key={index}
-          style={[
-            stylesSizeSelector.sizeOption,
-            size === "M" && stylesSizeSelector.sizeSelected,
-          ]}
-        >
-          {size}
-        </Text>
-      ))}
+const SizeSelector = ({ selectedSize, onSelectSize }) => {
+  const sizes = ["P", "M", "G"];
+
+  return (
+    <View style={styles.sizeContainer}>
+      <Text style={styles.sizeTitle}>Tamanho</Text>
+      <View style={styles.sizeOptions}>
+        {sizes.map((size, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => onSelectSize(size)}
+            style={[
+              styles.sizeOption,
+              selectedSize === size && styles.sizeSelected,
+            ]}
+          >
+            <Text
+              style={[
+                styles.sizeText,
+                selectedSize === size && styles.sizeTextSelected,
+              ]}
+            >
+              {size}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
-const stylesSizeSelector = StyleSheet.create({
+const styles = StyleSheet.create({
   sizeContainer: {
     padding: 10,
   },
@@ -41,8 +53,15 @@ const stylesSizeSelector = StyleSheet.create({
   },
   sizeSelected: {
     backgroundColor: "#FFE5B4",
-    color: "#D2691E",
     borderColor: "#D2691E",
+  },
+  sizeText: {
+    color: "#333",
+    fontWeight: "500",
+  },
+  sizeTextSelected: {
+    color: "#D2691E",
+    fontWeight: "bold",
   },
 });
 

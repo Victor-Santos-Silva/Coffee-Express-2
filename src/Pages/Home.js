@@ -94,7 +94,7 @@ export default function Home() {
               imageSource={{ uri: IMAGE_BASE_URL + produto.imagem }}
               title={produto.nome}
               description={produto.tipoDeProduto}
-              money={produto.preco}
+              money={produto.precoMedio}
               onPress={() => navigation.navigate("Descricao", produto)}
             />
           ))}
