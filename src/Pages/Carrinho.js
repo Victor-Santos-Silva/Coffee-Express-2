@@ -78,6 +78,7 @@ export default function Carrinho() {
                 </Text>
                 <Text>Quantidade: {produto.quantidade}</Text>
                 <Text>Subtotal: R$ {produto.subtotal.toFixed(2)}</Text>
+                <Text>Tamanho: {produto.tamanho}</Text>
 
                 <Button
                   title="Excluir"
