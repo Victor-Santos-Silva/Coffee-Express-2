@@ -31,9 +31,11 @@ export default function Carrinho() {
     fetchCarrinho();
   }, []);
 
-  const deleteProduto = async (produtoId) => {
+  const deleteProduto = async (produtoId, tamanho) => {
     try {
-      await axios.delete(`http://10.0.2.2:3000/api/carrinho/1/${produtoId}`);
+      await axios.delete(
+        `http://10.0.2.2:3000/api/carrinho/1/${produtoId}/${tamanho}`
+      );
       fetchCarrinho();
     } catch (error) {
       console.error("Erro ao remover item:", error);
@@ -70,7 +72,9 @@ export default function Carrinho() {
                 <Button
                   title="Excluir"
                   color="red"
-                  onPress={() => deleteProduto(produto.produtoId)}
+                  onPress={() =>
+                    deleteProduto(produto.produtoId, produto.tamanho)
+                  }
                 />
               </View>
             ))

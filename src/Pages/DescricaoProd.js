@@ -11,16 +11,13 @@ import axios from "axios";
 const Descricao = () => {
   const { params } = useRoute();
 
-  // 💡 O ID do produto virá dos parâmetros da navegação (params)
   const idProduto = params?.idProduto || params?.id;
 
-  // Estado para guardar os dados do produto DEPOIS da requisição
   const [produto, setProduto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tamanho, setTamanho] = useState("M");
 
-  // Função para buscar os detalhes
   useEffect(() => {
     if (!idProduto) {
       setError(new Error("ID do produto não encontrado nos parâmetros."));
@@ -31,18 +28,13 @@ const Descricao = () => {
     const fetchDetalhes = async () => {
       try {
         setLoading(true);
-        // Chama a função de API com o ID
         const responseData = await getProdutoId(idProduto);
-
-        // 🎯 DESESTRUTURAÇÃO AQUI!
-        // Acessa o objeto 'produto' dentro da resposta
         const { produto: itemAPI } = responseData;
 
         if (itemAPI) {
           setProduto(itemAPI);
           setError(null);
         } else {
-          // Trata caso a API retorne um objeto vazio ou erro, mas sem throw
           throw new Error(responseData.msg || "Produto não encontrado.");
         }
       } catch (e) {
@@ -54,9 +46,7 @@ const Descricao = () => {
     };
 
     fetchDetalhes();
-  }, [idProduto]); // Roda sempre que o ID mudar
-
-  // --- Renderização Condicional ---
+  }, [idProduto]);
 
   if (loading) {
     return (
@@ -98,14 +88,18 @@ const Descricao = () => {
   const handleAddCarrinho = async () => {
     try {
       const response = await axios.post("http://10.0.2.2:3000/api/carrinho", {
-        adminId: 1, // ID do usuário/admin
-        produtoId: produto.idProduto, // ID do produto atual
-        quantidade: 1, // Sempre 1, ou você pode mudar depois
+        adminId: 1,
+        produtoId: produto.idProduto,
+        quantidade: 1,
+        tamanho: tamanho,
       });
 
       Alert.alert("Sucesso", "Produto adicionado ao carrinho!");
     } catch (error) {
-      console.error("Erro ao adicionar ao carrinho:", error);
+      console.error(
+        "Erro ao adicionar ao carrinho:",
+        error.response?.data || error
+      );
       Alert.alert("Erro", "Não foi possível adicionar ao carrinho.");
     }
   };
