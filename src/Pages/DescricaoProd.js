@@ -7,12 +7,12 @@ import Footer from "../Components/Footer";
 import { getProdutoId } from "../api/ApiProduto";
 import { useRoute } from "@react-navigation/native";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Descricao = () => {
   const { params } = useRoute();
 
   const idProduto = params?.idProduto || params?.id;
-
   const [produto, setProduto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -86,9 +86,11 @@ const Descricao = () => {
       : produto.precoGrande;
 
   const handleAddCarrinho = async () => {
+    const adminId = await AsyncStorage.getItem("adminId");
+
     try {
       const response = await axios.post("http://10.0.2.2:3000/api/carrinho", {
-        adminId: 1,
+        adminId: adminId,
         produtoId: produto.idProduto,
         quantidade: 1,
         tamanho: tamanho,

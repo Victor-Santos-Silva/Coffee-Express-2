@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login() {
   const [usuario, setUsuario] = useState("");
@@ -25,8 +26,10 @@ export default function Login() {
           senha,
         }
       );
+      const idAdmin = response.data.admin.id;
+
+      await AsyncStorage.setItem("adminId", String(idAdmin));
       navigation.navigate("Home");
-      console.log("Login realizado:", response.data);
     } catch (error) {
       Alert.alert("Falha no login.", "Email ou senha incorretos.");
       if (error.response) {

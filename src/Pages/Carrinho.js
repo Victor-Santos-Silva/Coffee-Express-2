@@ -12,29 +12,43 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import Navegacao from "../Components/Navegacao";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Carrinho() {
   const [carrinho, setCarrinho] = useState(null);
+  const [idAdmin, setIdAdmin] = useState(null);
   const navigation = useNavigation();
 
-  // Buscar itens do carrinho
+  // Buscar o idAdmin salvo no login
+  useEffect(() => {
+    const loadId = async () => {
+      const id = await AsyncStorage.getItem("adminId");
+      setIdAdmin(id);
+    };
+    loadId();
+  }, []);
+
+  // Buscar itens do carrinho quando o idAdmin existir
+  useEffect(() => {
+    if (!idAdmin) return;
+    fetchCarrinho();
+  }, [idAdmin]);
+
   const fetchCarrinho = async () => {
     try {
-      const response = await axios.get("http://10.0.2.2:3000/api/carrinho/1");
+      const response = await axios.get(
+        `http://10.0.2.2:3000/api/carrinho/${idAdmin}`
+      );
       setCarrinho(response.data);
     } catch (error) {
       console.error("Erro ao buscar carrinho:", error);
     }
   };
 
-  useEffect(() => {
-    fetchCarrinho();
-  }, []);
-
   const deleteProduto = async (produtoId, tamanho) => {
     try {
       await axios.delete(
-        `http://10.0.2.2:3000/api/carrinho/1/${produtoId}/${tamanho}`
+        `http://10.0.2.2:3000/api/carrinho/${idAdmin}/${produtoId}/${tamanho}`
       );
       fetchCarrinho();
     } catch (error) {
@@ -48,8 +62,10 @@ export default function Carrinho() {
         <View style={styles.container}>
           <Text style={styles.title}>Produtos do Carrinho</Text>
 
-          {!carrinho ? (
-            <Text>Carregando...</Text>
+          {!idAdmin ? (
+            <Text>Carregando dados do usuário...</Text>
+          ) : !carrinho ? (
+            <Text>Carregando carrinho...</Text>
           ) : carrinho.items.length === 0 ? (
             <Text style={styles.noProducts}>Carrinho vazio.</Text>
           ) : (
@@ -57,17 +73,11 @@ export default function Carrinho() {
               <View key={index} style={styles.produtoItem}>
                 <Text style={styles.produtoName}>{produto.nome}</Text>
 
-                <Text style={styles.produtoPrice}>
+                <Text>
                   Preço unitário: R$ {produto.precoUnitario.toFixed(2)}
                 </Text>
-
-                <Text style={styles.produtoPrice}>
-                  Quantidade: {produto.quantidade}
-                </Text>
-
-                <Text style={styles.produtoPrice}>
-                  Subtotal: R$ {produto.subtotal.toFixed(2)}
-                </Text>
+                <Text>Quantidade: {produto.quantidade}</Text>
+                <Text>Subtotal: R$ {produto.subtotal.toFixed(2)}</Text>
 
                 <Button
                   title="Excluir"
@@ -80,7 +90,6 @@ export default function Carrinho() {
             ))
           )}
 
-          {/* Total */}
           {carrinho && carrinho.items.length > 0 && (
             <Text style={styles.total}>
               Total: R$ {carrinho.total.toFixed(2)}
