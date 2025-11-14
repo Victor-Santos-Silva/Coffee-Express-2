@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import ProductDetails from "../Components/ProductDetails";
 import DescricaoCompletaProduto from "../Components/DescricaoCompletaProduto";
@@ -6,6 +6,7 @@ import SizeSelector from "../Components/SizeSelector";
 import Footer from "../Components/Footer";
 import { getProdutoId } from "../api/ApiProduto";
 import { useRoute } from "@react-navigation/native";
+import axios from "axios";
 
 const Descricao = () => {
   const { params } = useRoute();
@@ -94,7 +95,21 @@ const Descricao = () => {
       ? produto.precoMedio
       : produto.precoGrande;
 
-  // 🎯 Dados da API agora estão em 'produto' e podem ser usados!
+  const handleAddCarrinho = async () => {
+    try {
+      const response = await axios.post("http://10.0.2.2:3000/api/carrinho", {
+        adminId: 1, // ID do usuário/admin
+        produtoId: produto.idProduto, // ID do produto atual
+        quantidade: 1, // Sempre 1, ou você pode mudar depois
+      });
+
+      Alert.alert("Sucesso", "Produto adicionado ao carrinho!");
+    } catch (error) {
+      console.error("Erro ao adicionar ao carrinho:", error);
+      Alert.alert("Erro", "Não foi possível adicionar ao carrinho.");
+    }
+  };
+
   return (
     <View style={styles.page}>
       <ProductDetails
@@ -103,11 +118,7 @@ const Descricao = () => {
       />
       <DescricaoCompletaProduto descriptionComplet={produto.descricao} />
       <SizeSelector selectedSize={tamanho} onSelectSize={setTamanho} />
-      <Footer
-        onAdd={() => console.log("Adicionar produto")}
-        loading={false}
-        price={precoAtual}
-      />
+      <Footer onAdd={handleAddCarrinho} loading={false} price={precoAtual} />
     </View>
   );
 };
